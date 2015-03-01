@@ -15,7 +15,7 @@ Gem::Specification.new do |spec|
   spec.homepage      = 'https://github.com/kryptykfysh/coordinates'
   spec.license       = 'MIT'
 
-  spec.files         = `git ls-files -z`.split("\x0").reject { |f| f.match(%r{^(test|spec|features)/}) }
+  spec.files         = `git ls-files -z`.split("\x0").reject { |f| f.match(%r{^(test|spec|features)/}) }.reject { |f| f =~ /.*\.gem\z/ }
   spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
   spec.require_paths = ['lib']
 
@@ -23,5 +23,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'rake', '~> 10.0'
   spec.add_development_dependency 'rspec', '~> 3.2', '>= 3.2.0'
   spec.add_development_dependency 'guard-rspec', '~> 4.5', '>= 4.5.0'
+  spec.add_development_dependency 'libnotify'
+  spec.add_development_dependency 'simplecov'
   spec.add_development_dependency 'yard'
 end
