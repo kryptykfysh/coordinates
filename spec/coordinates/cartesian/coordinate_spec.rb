@@ -45,6 +45,15 @@ module Coordinates
         specify { expect(coordinate).to respond_to :range_to          }
         specify { expect(coordinate).to respond_to :to_vector         }
         specify { expect(coordinate).to respond_to :two_dimensional?  }
+        specify { expect(coordinate).to respond_to :vector_to         }
+
+        describe '#range_to' do
+          let(:other_coord) { Coordinate.new(x: 42, y:69, z: -5) }
+
+          context 'without a Coordinate argument' do
+            specify { expect{ coordinate.range_to }.to raise_error(ArgumentError) }
+          end
+        end
 
         describe '#to_vector' do
           specify { expect(coordinate.to_vector).to be_a Vector }
@@ -56,12 +65,26 @@ module Coordinates
             it 'should return a two dimensional vector' do
               expect(two_d.to_vector.size).to eq(2)
             end
+
+            it 'should have values [:x, :y]' do
+              expect(two_d.to_vector).to eq(Vector[two_d.x, two_d.y])
+            end
           end
 
           context 'on a three dimensional coordinate' do
             it 'should return a three dimensional vector' do
               expect(coordinate.to_vector.size).to eq(3)
             end
+
+            it 'should have value [:x, :y, :z]' do
+              expect(coordinate.to_vector).to eq(Vector[coordinate.x, coordinate.y, coordinate.z])
+            end
+          end
+        end
+
+        describe '#two_dimensional?' do
+          context 'coordinate has a @z attribute' do
+            specify { expect(coordinate.two_dimensional?).to eq(false) }
           end
         end
       end
