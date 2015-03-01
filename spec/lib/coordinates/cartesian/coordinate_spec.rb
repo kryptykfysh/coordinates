@@ -42,10 +42,33 @@ module Coordinates
       end
 
       describe 'instance methods' do
+        specify { expect(coordinate).to respond_to :apply_vector      }
+        specify { expect(coordinate).to respond_to :apply_vector!     }
         specify { expect(coordinate).to respond_to :range_to          }
         specify { expect(coordinate).to respond_to :to_vector         }
         specify { expect(coordinate).to respond_to :two_dimensional?  }
         specify { expect(coordinate).to respond_to :vector_to         }
+
+        describe '#apply_vector' do
+          context 'without a Vector argument' do
+            specify { expect{ coordinate.apply_vector }.to raise_error(ArgumentError) }
+          end
+
+          context 'with a valid Vector argument' do
+            let(:vector) { Vector[1, 2.5, -3] }
+            let(:new_coord) { coordinate.apply_vector(vector) }
+
+            it 'should return a new Coordinate' do
+              expect(coordinate.apply_vector(vector)).to be_an_instance_of(Coordinate)
+            end
+
+            it 'returns the new Coordinate with the @x, @y and @z attributes updated' do
+              expect(new_coord.x).to eq(coordinate.x + vector[0])
+              expect(new_coord.y).to eq(coordinate.y + vector[1])
+              expect(new_coord.z).to eq(coordinate.z + vector[2])
+            end
+          end
+        end
 
         describe '#range_to' do
           let(:other_coord) { Coordinate.new(x: 42, y:69, z: -5) }
@@ -85,6 +108,20 @@ module Coordinates
         describe '#two_dimensional?' do
           context 'coordinate has a @z attribute' do
             specify { expect(coordinate.two_dimensional?).to eq(false) }
+          end
+        end
+
+        describe '#vector_to' do
+          context 'without an other_coordinate argument' do
+            specify { expect{ coordinate.vector_to }.to raise_error(ArgumentError) }
+          end
+
+          context 'with a valid other_coordinate argument' do
+            let(:other) { Coordinate.new(x: 42, y: 69, z: -75.423) }
+
+            it 'should return a Vector' do
+              expect(coordinate.vector_to(other)).to be_an_instance_of Vector
+            end
           end
         end
       end

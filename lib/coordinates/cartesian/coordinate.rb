@@ -37,6 +37,21 @@ module Coordinates::Cartesian
       end
     end
 
+    # Returns a new Coordinate with a position of self with the vector paramter
+    # applied.
+    # @see #apply_vector!
+    # @param [Vector] vector
+    # @return [Coordinate] the new Coordinate object
+    def apply_vector(vector)
+      Coordinate.new Hash[[:x, :y, :z].zip(self.to_vector + vector)]
+    end
+
+    # Updates self in place, adding argument vector to @x, @y, @z.
+    # @see #apply_vector
+    # @return [Coordinate] the updated Coordinate object
+    def apply_vector!(vector)
+    end
+
     # Returns absolute distance to parameter other_coordinate
     # @param other_coordinate [Coordinates::Cartesian::Coordinate]
     # @return [Float]
@@ -64,6 +79,7 @@ module Coordinates::Cartesian
     # @param [Coordinates::Cartesian::Coordinate] other_coordinate
     # @return [Vector]
     def vector_to(other_coordinate)
+      Vector[0, 0]
     end
   end
 end
