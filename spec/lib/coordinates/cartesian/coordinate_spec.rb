@@ -42,12 +42,36 @@ module Coordinates
       end
 
       describe 'instance methods' do
+        specify { expect(coordinate).to respond_to :==                }
         specify { expect(coordinate).to respond_to :apply_vector      }
         specify { expect(coordinate).to respond_to :apply_vector!     }
         specify { expect(coordinate).to respond_to :range_to          }
         specify { expect(coordinate).to respond_to :to_vector         }
         specify { expect(coordinate).to respond_to :two_dimensional?  }
         specify { expect(coordinate).to respond_to :vector_to         }
+
+        describe '#==' do
+          context 'when no argument is supplied' do
+            specify { expect{ coordinate.== }.to raise_error(ArgumentError) }
+          end
+
+          context 'when a valid other Object is supplied' do
+            context 'with @x, @y, and @z values equal to coordinate' do
+              let(:thing) do
+                Thing = Struct.new(:x, :y, :z)
+                Thing.new(coordinate.x, coordinate.y, coordinate.z)
+              end
+
+              specify { expect(coordinate == thing).to eq(true) }
+            end
+
+            context 'when axis variables are not present on other argument Object' do
+              let(:thing) { Object.new }
+
+              specify { expect(coordinate == thing).to eq(false) }
+            end
+          end
+        end
 
         describe '#apply_vector' do
           context 'without a Vector argument' do
@@ -66,6 +90,51 @@ module Coordinates
               expect(new_coord.x).to eq(coordinate.x + vector[0])
               expect(new_coord.y).to eq(coordinate.y + vector[1])
               expect(new_coord.z).to eq(coordinate.z + vector[2])
+            end
+          end
+        end
+
+        describe '#apply_vector!' do
+          context 'without a vector argument' do
+            specify { expect{ coordinate.apply_vector! }.to raise_error(ArgumentError) }
+          end
+
+          context 'with a valid vector argument' do
+            let(:vector) { Vector[1, 2.5, -7] }
+
+            it 'returns the original Coordinate object' do
+              expect(coordinate.apply_vector!(vector)).to be(coordinate)
+            end
+
+            context 'for a three dimensional coordinate' do
+              [:x, :y, :z].each_with_index do |axis, index|
+                it "updates the Coordinate's @#{axis}" do
+                  expect{ coordinate.apply_vector!(vector) }
+                    .to change{ coordinate.send(axis) }
+                    .from(coordinate.send(axis))
+                    .to(coordinate.send(axis) + vector[index])
+                end
+              end
+            end
+
+            context 'for a two dimensional coordinate' do
+              let(:two_d) { Coordinate.new(x: 0, y: 1) }
+              let(:vector) { Vector[-0.5, 3.75] }
+
+              [:x, :y].each_with_index do |axis, index|
+                it "updates the Coordinate's @#{axis}" do
+                  expect{ two_d.apply_vector!(vector) }
+                    .to change{ two_d.send(axis) }
+                    .from(two_d.send(axis))
+                    .to(two_d.send(axis) + vector[index])
+                end
+
+                it 'does not update the @z axis' do
+                  expect{ two_d.apply_vector!(vector) }
+                    .to_not change{ two_d.z }
+                    .from(nil)
+                end
+              end
             end
           end
         end
@@ -121,6 +190,11 @@ module Coordinates
 
             it 'should return a Vector' do
               expect(coordinate.vector_to(other)).to be_an_instance_of Vector
+            end
+
+            it 'should return a Vector that maps self to the Coordinate argument' do
+              expect(coordinate.apply_vector(coordinate.vector_to(other)))
+                .to eq(other)
             end
           end
         end
