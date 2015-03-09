@@ -9,6 +9,6 @@ task test: :spec
 
 YARD::Rake::YardocTask.new do |t|
   t.files   = ['lib/**/*.rb']   # optional
-  t.options = ['--private --protected'] # optional
+  t.options = ['--private', '--protected', '--legacy'] # optional
   t.stats_options = ['--list-undoc']         # optional
 end

@@ -3,6 +3,9 @@
 require 'matrix'
 
 module Coordinates::Cartesian
+  # Representation of a point in three dimaensional space using, @x, @y, and
+  # @z attributes.
+  # @author Kryptykfysh
   class Coordinate
     # Defines the position on the X axis of two or three dimensional space.
     # @return [Float]
@@ -41,6 +44,7 @@ module Coordinates::Cartesian
     # @param other_coordinate [Coordinates::Cartesian::Coordinate]
     # @return [Float]
     def range_to(other_coordinate)
+      vector_to(other_coordinate).magnitude
     end
 
     # Returns a Vector object with the Coordinate values.
@@ -61,9 +65,18 @@ module Coordinates::Cartesian
 
     # Returns a Vector, which when applied to #self, moves #self to
     # parameter other_coordinate.
+    # If a two dimensional other-coordinate is passed to a three dimensional
+    # instance, the parameter's @z will be treated as 0.
+    # Likewise for a three dimension other_coordinate passed to a two
+    # dimensional instance.
     # @param [Coordinates::Cartesian::Coordinate] other_coordinate
     # @return [Vector]
     def vector_to(other_coordinate)
+      Vector[
+        other_coordinate.x - x,
+        other_coordinate.y - y,
+        (other_coordinate.z || 0.0) - (self.z || 0.0)
+      ]
     end
   end
 end

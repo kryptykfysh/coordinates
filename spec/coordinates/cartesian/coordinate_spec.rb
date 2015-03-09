@@ -53,6 +53,15 @@ module Coordinates
           context 'without a Coordinate argument' do
             specify { expect{ coordinate.range_to }.to raise_error(ArgumentError) }
           end
+
+          context 'with a valid other_coordinate argument' do
+            let(:other) { Coordinates::Cartesian::Coordinate.new(x: 1, y: 2, z: 2) }
+
+            it 'returns the absolute distance between the coordinates' do
+              expect(coordinate.range_to(other))
+                .to eq(2.449489742783178)
+            end
+          end
         end
 
         describe '#to_vector' do
@@ -82,42 +91,75 @@ module Coordinates
           end
         end
 
+        describe '#vector_to' do
+          context 'with no argument supplied' do
+            specify { expect{ coordinate.vector_to }.to raise_error(ArgumentError) }
+          end
+
+          context 'with a two dimensional coordinate argument on a three dimensional coordinate' do
+            let(:target) { Coordinates::Cartesian::Coordinate.new(x: 42, y: 69) }
+
+            it 'treats the parameter\'s @z as 0' do
+              expect(coordinate.vector_to(target))
+                .to eq(Vector[
+                              target.x - coordinate.x,
+                              target.y - coordinate.y,
+                              0.00 - coordinate.z
+                ])
+            end
+          end
+
+          context 'with a three dimensional coordinate argument on a two dimensional coordinate' do
+            let(:target) { Coordinates::Cartesian::Coordinate.new(x: 42, y: 69, z: 169) }
+            before { coordinate.instance_variable_set('@z', nil) }
+
+            it 'treats the parameter\'s @z as 0' do
+              expect(coordinate.vector_to(target))
+                .to eq(Vector[
+                              target.x - coordinate.x,
+                              target.y - coordinate.y,
+                              target.z - 0.0
+                ])
+            end
+          end
+        end
+
         describe '#two_dimensional?' do
           context 'coordinate has a @z attribute' do
             specify { expect(coordinate.two_dimensional?).to eq(false) }
           end
         end
       end
+    end
 
-      describe 'class methods' do
-        describe '::new' do
-          context 'without an :x argument' do
-            let(:no_x_hash) { { y: 0, z: 0 } }
+    describe 'class methods' do
+      describe '::new' do
+        context 'without an :x argument' do
+          let(:no_x_hash) { { y: 0, z: 0 } }
 
-            it 'should throw an ArgumentError' do
-              expect{ Coordinate.new(no_x_hash) }.to raise_error(ArgumentError)
-            end
+          it 'should throw an ArgumentError' do
+            expect{ Coordinate.new(no_x_hash) }.to raise_error(ArgumentError)
+          end
+        end
+
+        context 'without a :y argument' do
+          let(:no_y_hash) { { x: 0, z: 0 } }
+
+          it 'should throw an ArgumentError' do
+            expect{ Coordinate.new(no_y_hash) }.to raise_error(ArgumentError)
+          end
+        end
+
+        context 'without a :z argument' do
+          let(:no_z_hash) { { x: 0, y:0 } }
+
+          it 'should not raise an error' do
+            expect{ Coordinate.new(no_z_hash) }.to_not raise_error
           end
 
-          context 'without a :y argument' do
-            let(:no_y_hash) { { x: 0, z: 0 } }
-
-            it 'should throw an ArgumentError' do
-              expect{ Coordinate.new(no_y_hash) }.to raise_error(ArgumentError)
-            end
-          end
-
-          context 'without a :z argument' do
-            let(:no_z_hash) { { x: 0, y:0 } }
-
-            it 'should not raise an error' do
-              expect{ Coordinate.new(no_z_hash) }.to_not raise_error
-            end
-
-            it 'should set @z to nil' do
-              c = Coordinate.new(no_z_hash)
-              expect(c.z).to be_nil
-            end
+          it 'should set @z to nil' do
+            c = Coordinate.new(no_z_hash)
+            expect(c.z).to be_nil
           end
         end
       end
