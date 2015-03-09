@@ -3,7 +3,7 @@
 require 'matrix'
 
 module Coordinates::Cartesian
-  # Representation of a point in three dimaensional space using, @x, @y, and
+  # Representation of a point in three dimensional space using, @x, @y, and
   # @z attributes.
   # @author Kryptykfysh
   class Coordinate
@@ -38,6 +38,40 @@ module Coordinates::Cartesian
       if z
         @z = z.is_a?(Float) ? z : z.to_f
       end
+    end
+
+    # Compares argument object to self.
+    # @param [Object] other
+    # @return [true] if @x, @y and @z values are all equal
+    # @return [false] if axis values are not equal or not present
+    def ==(other)
+      begin
+        [:x, :y, :z].all? do |axis|
+          self.send(axis) == other.send(axis)
+        end
+      rescue
+        false
+      end
+    end
+
+    # Returns a new Coordinate with a position of self with the vector paramter
+    # applied.
+    # @see #apply_vector!
+    # @param [Vector] vector
+    # @return [Coordinate] the new Coordinate object
+    def apply_vector(vector)
+      Coordinate.new Hash[[:x, :y, :z].zip(self.to_vector + vector)]
+    end
+
+    # Updates self in place, adding argument vector to @x, @y, @z.
+    # @see #apply_vector
+    # @return [Coordinate] the updated Coordinate object
+    def apply_vector!(vector)
+      new_position = self.to_vector + vector
+      @x = new_position[0]
+      @y = new_position[1]
+      @z = new_position[2] if @z
+      self
     end
 
     # Returns absolute distance to parameter other_coordinate
