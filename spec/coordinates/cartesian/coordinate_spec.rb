@@ -43,6 +43,7 @@ module Coordinates
 
       describe 'instance methods' do
         specify { expect(coordinate).to respond_to :range_to          }
+        specify { expect(coordinate).to respond_to :to_spherical      }
         specify { expect(coordinate).to respond_to :to_vector         }
         specify { expect(coordinate).to respond_to :two_dimensional?  }
         specify { expect(coordinate).to respond_to :vector_to         }
@@ -61,6 +62,14 @@ module Coordinates
               expect(coordinate.range_to(other))
                 .to eq(2.449489742783178)
             end
+          end
+        end
+
+        describe '#to_spherical' do
+          it 'returns a Spherical::Coordinate representation of the point' do
+            expect(coordinate.to_spherical.radial_distance).to eq(1.0)
+            expect(coordinate.to_spherical.azimuth_angle).to eq(0.0)
+            expect(coordinate.to_spherical.polar_angle).to eq(0.0)
           end
         end
 

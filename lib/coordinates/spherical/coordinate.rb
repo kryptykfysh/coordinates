@@ -15,10 +15,10 @@ module Coordinates
       attr_reader :radial_distance
 
       # @return [Float] Angle, in radians, on the reference place, from the
-      #   x-axis. From 0.0 to Math::PI radians.
+      #   x-axis. From 0.0 to 2 * Math::PI radians.
       attr_reader :polar_angle
 
-      # @return [Float] Angle, in radians, from the z-axis. From -Math::PI to
+      # @return [Float] Angle, in radians, from the z-axis. From 0 to
       #   Math::PI radians.
       attr_reader :azimuth_angle
 
@@ -26,9 +26,9 @@ module Coordinates
       # @param radial_distance [Float, Fixnum, Integer] the absolute distance
       #   from the origin point
       # @param polar_angle [Float, Fixnum, Integer] The angle, in radians, on
-      #   the reference plane from the x-axis. Range: 0..PI rad Range -PI..PI rad.
+      #   the reference plane from the x-axis. Range: 0.. 2 * PI rad Range -PI..PI rad.
       # @param azimuth_angle [Float, Fixnum, Integer] The angle, in radians,
-      #   from the z-axis. Range -PI..PI rad.
+      #   from the z-axis. Range 0..PI rad.
       def initialize (
           radial_distance:,
           polar_angle:,
@@ -37,6 +37,20 @@ module Coordinates
         @radial_distance  = radial_distance.to_f
         @polar_angle      = polar_angle.to_f
         @azimuth_angle    = azimuth_angle.to_f
+      end
+
+      # Return a new Cartesian::Coordinate object representing the same point.
+      # @return [Coordinates::Cartesian::Coordinate]
+      def to_cartesian
+        x = radial_distance * Math.sin(azimuth_angle) * Math.cos(polar_angle)
+        y = radial_distance * Math.sin(azimuth_angle) * Math.sin(polar_angle)
+        z = radial_distance * Math.cos(azimuth_angle)
+        Coordinates::Cartesian::Coordinate.new(x: x, y: y, z: z)
+      end
+
+      # Calculates a polar vector, which when applied to #self, maps to
+      # the other_coordinate parameter.
+      def vector_to(other_coordinate)
       end
     end
   end

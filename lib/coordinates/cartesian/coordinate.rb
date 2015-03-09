@@ -81,6 +81,20 @@ module Coordinates::Cartesian
       vector_to(other_coordinate).magnitude
     end
 
+    # Returns a Coordinates::Spherical::Coordinate representation of
+    # the same point.
+    # @return [Coordinates::Spherical::Coordinate]
+    def to_spherical
+      radial_distance = Math.sqrt(x ** 2 + y ** 2 + (z ** 2 || 0.0))
+      azimuth_angle = Math.acos((z || 0) / radial_distance)
+      polar_angle = Math.atan((y / x) || 0.0)
+      Coordinates::Spherical::Coordinate.new(
+        radial_distance:  radial_distance,
+        azimuth_angle:    azimuth_angle,
+        polar_angle:      polar_angle
+      )
+    end
+
     # Returns a Vector object with the Coordinate values.
     # @return [Vector]
     def to_vector
