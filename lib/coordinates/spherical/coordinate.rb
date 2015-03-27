@@ -50,6 +50,7 @@ module Coordinates
 
       # Calculates a polar vector, which when applied to #self, maps to
       # the other_coordinate parameter.
+      # @return [Coordinates::Spherical::Coordinate]
       def vector_to(other_coordinate)
       end
     end

@@ -87,7 +87,7 @@ module Coordinates::Cartesian
     def to_spherical
       radial_distance = Math.sqrt(x ** 2 + y ** 2 + (z ** 2 || 0.0))
       azimuth_angle = Math.acos((z || 0) / radial_distance)
-      polar_angle = Math.atan((y / x) || 0.0)
+      polar_angle = Math.atan((y.to_f / x) || 0.0)
       Coordinates::Spherical::Coordinate.new(
         radial_distance:  radial_distance,
         azimuth_angle:    azimuth_angle,

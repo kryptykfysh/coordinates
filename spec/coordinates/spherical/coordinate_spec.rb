@@ -30,6 +30,24 @@ module Coordinates::Spherical
           expect(point.to_cartesian.z).to eq(6.123233995736766e-17)
         end
       end
+
+      describe '#vector_to' do
+        context 'with no other_coordinate argument' do
+          it 'raises an ArgumentError' do
+            expect{point.vector_to}.to raise_error(ArgumentError)
+          end
+        end
+
+        context 'with a valid other_coordinate argument' do
+          let(:other_point) do
+            Coordinates::Spherical::Coordinate.new(
+              radial_distance:  2.0,
+              polar_angle:      Math::PI / 3,
+              azimuth_angle:    Math::PI / 1.5
+            )
+          end
+        end
+      end
     end
 
     describe 'class methods' do
